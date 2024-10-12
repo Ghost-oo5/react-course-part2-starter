@@ -3,7 +3,7 @@ import React from "react";
 
 const PostList = () => {
   const pageSize=10;
-  const { data, error, isLoading, fetchNextPage } = usePosts({ pageSize });
+  const { data, error, isLoading, fetchNextPage, isFetching } = usePosts({ pageSize });
 
   if (error) return <p className="text-danger fw-bold">{error.message}</p>;
   if (isLoading) return <div className="spinner-border text-success"></div>;
@@ -20,7 +20,11 @@ const PostList = () => {
           </React.Fragment>
         ))}
       </ul>
-      <button className="btn btn-primary my-3" onClick={()=>fetchNextPage()}>Load more</button>
+      <button
+      disabled={isFetching}
+       className="btn btn-primary my-3" onClick={()=>fetchNextPage()}>
+        {isFetching? "Loading...":'Load more' }
+       </button>
     </>
   );
 };
