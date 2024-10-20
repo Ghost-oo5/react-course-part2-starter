@@ -1,3 +1,4 @@
+import { List, ListItem, Menu, MenuItem } from '@chakra-ui/react';
 import useTodos from './Hooks/useTodos';
 
 
@@ -7,13 +8,13 @@ const TodoList = () => {
   if (error) return <p className='text-danger fw-bold'>{error.message}</p>;
 
   return (
-    <ul className="list-group">
+    <Menu>
       {todos?.map((todo) => (
-        <li key={todo.id} className="list-group-item">
+        <MenuItem key={todo.id} border={'1px'} borderRadius={'5px'} marginY={2}>
           {todo.title}
-        </li>
+        </MenuItem>
       ))}
-    </ul>
+    </Menu>
   );
 };
 
