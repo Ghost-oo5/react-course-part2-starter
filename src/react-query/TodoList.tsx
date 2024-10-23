@@ -1,21 +1,35 @@
-import { List, ListItem, Menu, MenuItem } from '@chakra-ui/react';
-import useTodos from './Hooks/useTodos';
+import { Button, HStack, Menu, MenuItem, MenuList, Spinner, Text } from "@chakra-ui/react";
+import useTodos from "./Hooks/useTodos";
+import { Fragment, useState } from "react";
 
-
-const TodoList = () => {
-  const {data:todos, error, isLoading } = useTodos();
-  if (isLoading) return <div className="spinner-border text-danger"></div>
-  if (error) return <p className='text-danger fw-bold'>{error.message}</p>;
-
+function TodoList() {
+  const pageSize = 10;
+  // const [page, setPage] = useState(1);
+  const { data, error, isLoading, fetchNextPage, isFetchingNextPage } = useTodos({pageSize });
   return (
-    <Menu>
-      {todos?.map((todo) => (
-        <MenuItem key={todo.id} border={'1px'} borderRadius={'5px'} marginY={2}>
-          {todo.title}
-        </MenuItem>
-      ))}
-    </Menu>
+    <>
+      {isLoading && <Spinner color="red"></Spinner>}
+      {error && (
+        <Text color={"red"} fontWeight={"bold"}>
+          {error.message}
+        </Text>
+      )}
+      <Menu>
+       {data?.pages.map((item, index)=>
+       <Fragment key={index}>
+         {item?.map((item) => (
+          <MenuItem bg={"gray.700"} margin={2} borderRadius={5} key={item.id}>
+            {item.id}: {item.title}
+          </MenuItem>
+        ))}
+       </Fragment>
+      )}
+      </Menu>
+      <HStack justifyContent={'center'}>
+        <Button onClick={()=>fetchNextPage()} colorScheme="blue"   disabled={isFetchingNextPage} marginLeft={2}>{(isFetchingNextPage)?'Fetching...':'Load more...'}</Button>
+      </HStack>
+    </>
   );
-};
+}
 
 export default TodoList;

@@ -1,60 +1,61 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Button, HStack, Input, Spinner, Text } from "@chakra-ui/react";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { useRef } from "react";
 import { Todo } from "./Hooks/useTodos";
-import axios from "axios";
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Button, FormControl, HStack, Input, useToast } from "@chakra-ui/react";
+import { useQueryClient } from "@tanstack/react-query";
 
-const TodoForm = () => {
-  const toast = useToast();
-  const queryClient = useQueryClient();
+function TodoForm() {
+  const query = useQueryClient();
   const ref = useRef<HTMLInputElement>(null);
   const AddTodo = useMutation({
-    mutationFn: (todo: Todo) =>
+    mutationFn: (newTodo: Todo) =>
       axios
-        .post<Todo>("https://jsonplaceholder.typicode.com/todos")
+        .post("https://jsonplaceholder.typicode.com/todos", newTodo)
         .then((res) => res.data),
-        onSuccess:(todo, newtodo)=>
-        {
-          console.log(newtodo);
-          queryClient.setQueryData<Todo[]>(['todos'], todo=>[ newtodo, ...(todo || [])])
-        }
+    onMutate: (newTodo: Todo) => {
+      query.setQueryData(["todos", 10], (oldData: any) => {
+        if (!oldData) return { pages: [[newTodo]], pageParams: [1] };
+
+        // Add the new newTodo to the first page of the cache
+        return {
+          ...oldData,
+          pages: [[newTodo, ...oldData.pages[0]], ...oldData.pages.slice(1)],
+        };
+      });
+      if (ref.current) ref.current.value = "";
+    },
+    onSuccess: (savedTodo, newTodo) => {
+      query.setQueryData<Todo[]>(["todo"], (todos) =>
+        todos?.map((item) => (item == newTodo ? savedTodo : item) )
+      );
+    },
   });
   return (
     <>
-    {AddTodo.error?.message &&  toast({
-          title: ref.current?.value,
-          description: `${ref.current?.value} has been added`,
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-        })}
-    <form
-      className="row mb-3"
-      onSubmit={(event) => {
-        event.preventDefault();
-        if(ref.current && ref.current.value)
-        AddTodo.mutate({
-          id: 0,
-          title: ref.current?.value,
-          userId: 1,
-          completed: true,
-        });
-    {AddTodo.data &&    toast({
-          title: ref.current?.value,
-          description: `${ref.current?.value} has been added`,
-          status: 'success',
-          duration: 9000,
-          isClosable: true,
-        })}
-      }}
-    >
-      <HStack>
-        <Input ref={ref} type="text"/>
-        <Button type="submit">Add</Button>
-      </HStack>
-    </form>
+      {AddTodo.error && <Text>{AddTodo.error.message}</Text>}
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          console.log(ref.current?.value);
+          if (ref.current && ref.current.value)
+            AddTodo.mutate({
+              userId: 1,
+              id: 1,
+              title: ref.current?.value,
+              completed: true,
+            });
+        }}
+      >
+        <HStack marginLeft={2} marginBottom={3}>
+          <Input ref={ref} placeholder="Add todo" />
+          <Button disabled={AddTodo.isPending} type="submit">
+            {AddTodo.isPending ? "Loading..." : "Add Task"}
+          </Button>
+        </HStack>
+      </form>
     </>
   );
-};
+}
 
 export default TodoForm;
