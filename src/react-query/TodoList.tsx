@@ -59,6 +59,7 @@ function TodoList() {
           colorScheme="blue"
           disabled={isFetchingNextPage}
           marginLeft={2}
+          marginTop={2}
         >
           {isFetchingNextPage ? "Fetching..." : "Load more..."}
         </Button>
