@@ -1,7 +1,7 @@
 import { Button, HStack, Input, Text } from "@chakra-ui/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { Todo } from "./Hooks/useTodos";
+import { Todo } from "../Services/todoService";
 import { useRef } from "react";
 import useAddTodo from "./Hooks/useAddTodo";
 
