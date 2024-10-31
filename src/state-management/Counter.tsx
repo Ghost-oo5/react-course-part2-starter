@@ -1,25 +1,19 @@
-import { useState } from 'react';
+import { Button, Heading, HStack } from "@chakra-ui/react";
+import React, { useReducer, useState } from "react";
+import CounterReducer from "./reducers/CounterReducer";
 
-const Counter = () => {
-  const [value, setValue] = useState(0);
-
+function Counter() {
+  // const [value, setValue] = useState(0)
+  const [value, dispatch] =useReducer(CounterReducer, 0);
   return (
-    <div>
-      Counter ({value})
-      <button
-        onClick={() => setValue(value + 1)}
-        className="btn btn-primary mx-1"
-      >
-        Increment
-      </button>
-      <button
-        onClick={() => setValue(0)}
-        className="btn btn-primary mx-1"
-      >
-        Reset
-      </button>
-    </div>
+    <>
+      <Heading>Count: {value}</Heading>
+      <HStack>
+        <Button onClick={() => dispatch({type:'RESET'})}>Reset</Button>
+        <Button onClick={() => dispatch({type:'INCREMENT'})}>Increment</Button>
+      </HStack>
+    </>
   );
-};
+}
 
 export default Counter;

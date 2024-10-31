@@ -1,7 +1,13 @@
-import TaskList from './TaskList';
+import Counter from "./Counter";
+import TaskList from "./TaskList";
 
 const HomePage = () => {
-  return <TaskList />;
+  return (
+    <>
+      {/* <TaskList /> */}
+      <Counter />
+    </>
+  );
 };
 
 export default HomePage;
