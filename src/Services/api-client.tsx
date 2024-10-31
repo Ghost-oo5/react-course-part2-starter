@@ -4,6 +4,9 @@ const axiosInstance = axios.create({
   baseURL: "https://jsonplaceholder.typicode.com",
 });
 
+
+
+
 class APIClient<T> {
   endpoint: string;
 
@@ -13,11 +16,11 @@ class APIClient<T> {
 
   getAll = () => {
     return axiosInstance.get<T[]>(this.endpoint).then((res) => res.data);
-  }
+  };
 
   postAll = (data: T) => {
     return axiosInstance.post<T>(this.endpoint, data).then((res) => res.data);
-  }
+  };
 }
 
 export default APIClient;
